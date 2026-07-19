@@ -80,10 +80,12 @@
     sections.forEach(function (s) { observer.observe(s); });
   }
 
-  /* ---- Contact form ---- */
+  /* ---- Contact form: mailto fallback message ---- */
   var form = document.getElementById('contact-form');
   if (form) {
-    form.addEventListener('submit', function () {
+    form.addEventListener('submit', function (e) {
+      /* Form action is mailto: — browser handles it. No preventDefault needed.
+         We just close any mobile nav in case it is open. */
       document.body.classList.remove('nav-open');
     });
   }
