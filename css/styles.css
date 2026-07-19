@@ -217,7 +217,9 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
 .amenity-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
 .amenity-card.has-photo { padding-top: 0; overflow: hidden; }
 .amenity-photo {
-  width: 100%;
+  width: calc(100% + 3rem);
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
   height: 180px;
   object-fit: cover;
   display: block;
