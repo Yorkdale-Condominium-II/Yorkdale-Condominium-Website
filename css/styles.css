@@ -129,7 +129,9 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   min-height: 82vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #082844 0%, #0d3b5c 45%, #1a5272 100%);
+  background:
+    linear-gradient(135deg, rgba(8,40,68,0.88) 0%, rgba(13,59,92,0.80) 50%, rgba(26,82,114,0.72) 100%),
+    url('../assets/building-exterior.jpg') center 40% / cover no-repeat;
   overflow: hidden;
 }
 .hero::before {
@@ -137,8 +139,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 15% 85%, rgba(74,138,175,0.2) 0%, transparent 50%),
-    radial-gradient(circle at 85% 15%, rgba(74,138,175,0.14) 0%, transparent 45%);
+    radial-gradient(circle at 15% 85%, rgba(74,138,175,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(74,138,175,0.10) 0%, transparent 45%);
 }
 .hero::after {
   content: '';
@@ -213,6 +215,14 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   transition: box-shadow var(--transition), transform var(--transition);
 }
 .amenity-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.amenity-card.has-photo { padding-top: 0; }
+.amenity-photo {
+  width: calc(100% + 3rem);
+  margin: 0 -1.5rem 1.25rem;
+  height: 160px;
+  object-fit: cover;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
 .amenity-icon { font-size: 2.4rem; margin-bottom: 0.85rem; line-height: 1; }
 .amenity-card h3 { font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.45rem; }
 .amenity-card p  { font-size: 0.87rem; color: var(--color-muted); line-height: 1.55; }
@@ -634,6 +644,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
     min-height: auto;
     padding: 2cm 0 1.5cm;
     background: #0d3b5c !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
