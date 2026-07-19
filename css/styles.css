@@ -3,15 +3,15 @@
    ============================================================ */
 
 :root {
-  --color-primary:       #0a2a5e;
-  --color-primary-dark:  #071e44;
-  --color-accent:        #c8a951;
-  --color-accent-hover:  #b8943d;
-  --color-bg:            #ffffff;
-  --color-surface:       #f4f6fb;
-  --color-text:          #1a1a2e;
+  --color-primary:       #2d4a6e;
+  --color-primary-dark:  #1e3450;
+  --color-accent:        #c4622d;
+  --color-accent-hover:  #a84e22;
+  --color-bg:            #fafaf8;
+  --color-surface:       #f0ede8;
+  --color-text:          #1a1a18;
   --color-muted:         #6b7280;
-  --color-border:        #e2e8f0;
+  --color-border:        #e2ddd7;
   --font-heading:        'Georgia', serif;
   --font-body:           'Segoe UI', system-ui, -apple-system, sans-serif;
   --nav-height:          72px;
@@ -54,7 +54,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .btn-primary { background: var(--color-primary); color: #fff; }
 .btn-primary:hover { background: var(--color-primary-dark); box-shadow: var(--shadow-md); transform: translateY(-1px); }
-.btn-accent  { background: var(--color-accent); color: var(--color-primary); }
+.btn-accent  { background: var(--color-accent); color: #fff; }
 .btn-accent:hover  { background: var(--color-accent-hover); box-shadow: var(--shadow-sm); }
 
 /* ============================================================
@@ -129,7 +129,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   min-height: 82vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #071e44 0%, #0a2a5e 45%, #143d7a 100%);
+  background: linear-gradient(135deg, #1e3450 0%, #2d4a6e 45%, #3a5e87 100%);
   overflow: hidden;
 }
 .hero::before {
@@ -137,8 +137,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 15% 85%, rgba(200,169,81,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 85% 15%, rgba(200,169,81,0.12) 0%, transparent 45%);
+    radial-gradient(circle at 15% 85%, rgba(196,98,45,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(196,98,45,0.12) 0%, transparent 45%);
 }
 .hero::after {
   content: '';
@@ -151,7 +151,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
 .hero-content {
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 900px;
   color: #fff;
   padding: 4rem 0;
 }
@@ -163,7 +163,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   color: #fff;
 }
 .hero-title span { color: var(--color-accent); }
-.hero-tagline { font-size: 1.15rem; color: rgba(255,255,255,0.75); margin-bottom: 2.25rem; max-width: 480px; }
+.hero-tagline { font-size: 1.15rem; color: rgba(255,255,255,0.75); margin-bottom: 2.25rem; max-width: 640px; }
 .hero-cta-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 .hero-portal-btn { font-size: 1rem; padding: 0.9rem 2rem; }
 .hero-scroll-link { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-decoration: underline; transition: color var(--transition); }
@@ -318,7 +318,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   outline: none;
   border-color: var(--color-primary);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(10,42,94,0.1);
+  box-shadow: 0 0 0 3px rgba(45,74,110,0.1);
 }
 .contact-form textarea { resize: vertical; min-height: 120px; }
 .contact-form .btn { margin-top: 0.25rem; width: 100%; }
@@ -354,8 +354,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--color-accent);
-  background: rgba(200,169,81,0.12);
-  border: 1px solid rgba(200,169,81,0.25);
+  background: rgba(196,98,45,0.12);
+  border: 1px solid rgba(196,98,45,0.25);
   border-radius: 2rem;
   padding: 0.3rem 0.9rem;
   margin-bottom: 1.25rem;
@@ -618,7 +618,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   .hero {
     min-height: auto;
     padding: 2cm 0 1.5cm;
-    background: #0a2a5e !important;
+    background: #2d4a6e !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
