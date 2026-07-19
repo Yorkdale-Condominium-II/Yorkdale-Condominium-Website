@@ -215,16 +215,6 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   transition: box-shadow var(--transition), transform var(--transition);
 }
 .amenity-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
-.amenity-card.has-photo { padding-top: 0; overflow: hidden; }
-.amenity-photo {
-  width: calc(100% + 3rem);
-  margin-left: -1.5rem;
-  margin-right: -1.5rem;
-  height: 180px;
-  object-fit: cover;
-  display: block;
-  margin-bottom: 1.5rem;
-}
 .amenity-icon { font-size: 2.4rem; margin-bottom: 0.85rem; line-height: 1; }
 .amenity-card h3 { font-size: 1rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.45rem; }
 .amenity-card p  { font-size: 0.87rem; color: var(--color-muted); line-height: 1.55; }
@@ -358,6 +348,25 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
    ============================================================ */
 .section { scroll-margin-top: var(--nav-height); }
 .policy-group { scroll-margin-top: calc(var(--nav-height) + 1rem); }
+
+/* ============================================================
+   SECTION PHOTO BACKGROUNDS
+   ============================================================ */
+#welcome {
+  background:
+    linear-gradient(rgba(250,250,248,0.88), rgba(250,250,248,0.88)),
+    url('../assets/lobby.jpg') center / cover no-repeat;
+}
+#amenities {
+  background:
+    linear-gradient(rgba(240,238,235,0.88), rgba(240,238,235,0.88)),
+    url('../assets/fitness-centre.jpg') center / cover no-repeat;
+}
+#announcements {
+  background:
+    linear-gradient(rgba(240,238,235,0.90), rgba(240,238,235,0.90)),
+    url('../assets/party-room.jpg') center / cover no-repeat;
+}
 
 /* ============================================================
    HERO — EYEBROW LABEL
