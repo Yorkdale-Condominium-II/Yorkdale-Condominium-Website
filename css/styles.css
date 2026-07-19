@@ -354,17 +354,17 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
    ============================================================ */
 #welcome {
   background:
-    linear-gradient(rgba(250,250,248,0.88), rgba(250,250,248,0.88)),
+    linear-gradient(rgba(250,250,248,0.75), rgba(250,250,248,0.75)),
     url('../assets/lobby.jpg') center / cover no-repeat;
 }
 #amenities {
   background:
-    linear-gradient(rgba(240,238,235,0.88), rgba(240,238,235,0.88)),
+    linear-gradient(rgba(240,238,235,0.75), rgba(240,238,235,0.75)),
     url('../assets/fitness-centre.jpg') center / cover no-repeat;
 }
 #announcements {
   background:
-    linear-gradient(rgba(240,238,235,0.90), rgba(240,238,235,0.90)),
+    linear-gradient(rgba(240,238,235,0.75), rgba(240,238,235,0.75)),
     url('../assets/party-room.jpg') center / cover no-repeat;
 }
 
