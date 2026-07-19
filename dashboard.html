@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Dashboard — Yorkdale Condominium II</title>
+  <meta name="description" content="Live weather for North York and real-time transit departures — TTC bus, subway, and GO Transit from Yorkdale.">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="dashboard-page">
+
+  <!-- =========================================================
+       HEADER / NAV  (shared with main site)
+       ========================================================= -->
+  <header class="site-header" id="site-header">
+    <div class="container header-inner">
+
+      <a href="index.html" class="logo-link" aria-label="Yorkdale Condominium II — go to home">
+        <img src="assets/logo-placeholder.svg" alt="" class="logo" width="44" height="44" aria-hidden="true">
+        <span class="logo-text">Yorkdale<strong>Condominium II</strong></span>
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+        <ul class="nav-list">
+          <li><a href="index.html#home"          class="nav-link">Home</a></li>
+          <li><a href="index.html#welcome"       class="nav-link">Welcome</a></li>
+          <li><a href="index.html#amenities"     class="nav-link">Amenities</a></li>
+          <li><a href="index.html#rules"         class="nav-link">Rules</a></li>
+          <li><a href="index.html#announcements" class="nav-link">Announcements</a></li>
+          <li><a href="index.html#contact"       class="nav-link">Contact</a></li>
+          <li><a href="dashboard.html"           class="nav-link active">Dashboard</a></li>
+        </ul>
+        <a href="https://app.condocontrol.com/login"
+           class="btn btn-accent portal-btn"
+           target="_blank"
+           rel="noopener noreferrer">
+          Resident Portal
+        </a>
+      </nav>
+
+      <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+      </button>
+
+    </div>
+  </header>
+
+
+  <!-- =========================================================
+       DASHBOARD HERO / TOOLBAR
+       ========================================================= -->
+  <div class="dash-hero">
+    <div class="container dash-hero-inner">
+      <div>
+        <h1 class="dash-title">📍 Local Dashboard</h1>
+        <p class="dash-subtitle">Weather &amp; Transit · North York / Yorkdale</p>
+      </div>
+      <div class="dash-meta">
+        <span id="dash-updated">Loading…</span>
+        <button id="dash-refresh" aria-label="Refresh dashboard">
+          <span class="refresh-icon" aria-hidden="true">↻</span> Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =========================================================
+       DASHBOARD CONTENT
+       ========================================================= -->
+  <main class="dash-content" id="dashboard">
+    <div class="container">
+
+      <!-- ---- TOP ROW: Weather ---- -->
+      <div class="dash-grid-top">
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <span class="dash-card-icon" aria-hidden="true">🌤️</span>
+            <span class="dash-card-title">Weather — North York</span>
+            <span style="margin-left:auto;font-size:0.72rem;color:var(--color-muted)">120 Varna Dr area</span>
+          </div>
+          <div class="dash-card-body" id="weather-body">
+            <span class="dash-status">Loading weather…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---- MIDDLE ROW: Transit cards ---- -->
+      <div class="dash-grid-middle">
+
+        <!-- TTC Subway Status -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <span class="dash-card-icon" aria-hidden="true">🚇</span>
+            <span class="dash-card-title">TTC Subway</span>
+          </div>
+          <div class="dash-card-body" id="subway-body">
+            <span class="dash-status">Loading subway status…</span>
+          </div>
+        </div>
+
+        <!-- TTC Bus Nearby -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <span class="dash-card-icon" aria-hidden="true">🚌</span>
+            <span class="dash-card-title">TTC Bus · Nearby</span>
+          </div>
+          <div class="dash-card-body" id="ttcbus-body">
+            <span class="dash-status">Loading bus predictions…</span>
+          </div>
+        </div>
+
+        <!-- GO Transit -->
+        <div class="dash-card">
+          <div class="dash-card-header">
+            <span class="dash-card-icon" aria-hidden="true">🚍</span>
+            <span class="dash-card-title">GO Transit</span>
+          </div>
+          <div class="dash-card-body" id="go-body">
+            <span class="dash-status">Loading GO Transit info…</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ---- BOTTOM ROW: Key station info ---- -->
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <span class="dash-card-icon" aria-hidden="true">📌</span>
+          <span class="dash-card-title">Nearby Transit Hubs</span>
+        </div>
+        <div class="dash-card-body">
+          <div class="dash-stations-grid">
+
+            <div class="station-card">
+              <span class="station-icon">🚇</span>
+              <div>
+                <div class="station-name">Yorkdale Station</div>
+                <div class="station-detail">Line 1 (Yonge–University)<br>~5 min walk · Allen Rd entrance</div>
+              </div>
+            </div>
+
+            <div class="station-card">
+              <span class="station-icon">🚇</span>
+              <div>
+                <div class="station-name">Wilson Station</div>
+                <div class="station-detail">Line 1 (Yonge–University)<br>~12 min walk · Wilson Ave</div>
+              </div>
+            </div>
+
+            <div class="station-card">
+              <span class="station-icon">🚌</span>
+              <div>
+                <div class="station-name">Yorkdale GO Bus Terminal</div>
+                <div class="station-detail">GO Bus: Routes 40, 40A, 40C, 64, 68<br>~8 min walk · inside Yorkdale Mall</div>
+              </div>
+            </div>
+
+            <div class="station-card">
+              <span class="station-icon">🚌</span>
+              <div>
+                <div class="station-name">TTC 29 Dufferin</div>
+                <div class="station-detail">24-hour route · runs to Exhibition &amp; Dufferin Gate<br>Northbound: Wilson / Sheppard</div>
+              </div>
+            </div>
+
+            <div class="station-card">
+              <span class="station-icon">🚌</span>
+              <div>
+                <div class="station-name">TTC 128 Stanley Greene</div>
+                <div class="station-detail">Local service · serves Varna Dr area<br>Connects to Yorkdale &amp; Wilson Stations</div>
+              </div>
+            </div>
+
+            <div class="station-card">
+              <span class="station-icon">🚌</span>
+              <div>
+                <div class="station-name">TTC 196 York U Rocket</div>
+                <div class="station-detail">Express: Yorkdale Stn → York University<br>Peak hours only</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+
+  <!-- =========================================================
+       FOOTER
+       ========================================================= -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+
+      <div class="footer-brand">
+        <img src="assets/logo-placeholder.svg" alt="" width="36" height="36" aria-hidden="true">
+        Yorkdale Condominium II
+      </div>
+
+      <p class="footer-tagline">Weather data: Open-Meteo (open-meteo.com) · Transit: TTC &amp; Metrolinx</p>
+
+      <nav aria-label="Footer navigation">
+        <ul class="footer-links">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="index.html#amenities">Amenities</a></li>
+          <li><a href="index.html#rules">Rules</a></li>
+          <li><a href="index.html#contact">Contact</a></li>
+          <li><a href="https://app.condocontrol.com/login" target="_blank" rel="noopener noreferrer">Resident Portal</a></li>
+          <li><a href="https://www.ttc.ca" target="_blank" rel="noopener noreferrer">TTC</a></li>
+          <li><a href="https://www.gotransit.com" target="_blank" rel="noopener noreferrer">GO Transit</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-divider"></div>
+      <p class="footer-copy">&copy; 2026 Yorkdale Condominium II. All rights reserved.</p>
+
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+/* ============================================================
+   Yorkdale Condominium II — dashboard.css
+   ============================================================ */
+
+/* ---- Dashboard layout ---- */
+.dashboard-page { background: var(--color-surface); min-height: 100vh; }
+
+.dash-hero {
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  padding: 2.5rem 0 2rem;
+  color: #fff;
+}
+.dash-hero-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.dash-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #fff;
+  margin-bottom: 0.25rem;
+}
+.dash-subtitle {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.6);
+  margin: 0;
+}
+.dash-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+#dash-updated {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.55);
+}
+#dash-refresh {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+#dash-refresh:hover { background: rgba(255,255,255,0.2); }
+.refresh-icon { display: inline-block; transition: transform 0.6s ease; }
+#dash-refresh.spinning .refresh-icon { transform: rotate(360deg); }
+
+/* ---- Dashboard content ---- */
+.dash-content { padding: 2rem 0 3rem; }
+
+/* ---- Cards ---- */
+.dash-card {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: calc(var(--radius) + 2px);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.dash-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1.25rem 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.dash-card-icon { font-size: 1.25rem; }
+.dash-card-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-primary);
+}
+.dash-card-body { padding: 1.25rem; }
+
+/* ---- Layout grid ---- */
+.dash-grid-top { margin-bottom: 1.25rem; }
+.dash-grid-middle {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ================================================================
+   WEATHER CARD
+   ================================================================ */
+.weather-now {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.25rem 1.5rem;
+  align-items: start;
+  margin-bottom: 1.25rem;
+}
+.weather-big-icon { font-size: 3.5rem; line-height: 1; }
+.weather-temp { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1; }
+.weather-cond { font-size: 1rem; color: var(--color-text); margin-top: 0.2rem; }
+.weather-feels { font-size: 0.82rem; color: var(--color-muted); margin-top: 0.15rem; }
+.weather-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem 1rem;
+}
+.weather-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--color-text);
+}
+
+/* Forecast strip */
+.weather-forecast {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.forecast-day {
+  text-align: center;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+.forecast-today {
+  border-color: var(--color-accent);
+  background: rgba(74,138,175,0.06);
+}
+.forecast-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); margin-bottom: 0.3rem; }
+.forecast-today .forecast-label { color: var(--color-accent); }
+.forecast-icon { font-size: 1.5rem; margin-bottom: 0.3rem; }
+.forecast-hi { font-size: 0.95rem; font-weight: 700; color: var(--color-primary); }
+.forecast-lo { font-size: 0.8rem; color: var(--color-muted); }
+.forecast-rain { font-size: 0.72rem; color: var(--color-accent); margin-top: 0.2rem; }
+
+/* ================================================================
+   SUBWAY STATUS CARD
+   ================================================================ */
+.service-ok {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.88rem;
+  color: var(--color-text);
+  font-weight: 600;
+}
+.service-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-ok    { background: #16a34a; box-shadow: 0 0 0 3px rgba(22,163,74,0.2); }
+.dot-alert { background: #dc2626; box-shadow: 0 0 0 3px rgba(220,38,38,0.2); }
+.dot-warn  { background: #d97706; box-shadow: 0 0 0 3px rgba(217,119,6,0.2); }
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  border-radius: var(--radius);
+  margin-bottom: 0.5rem;
+  font-size: 0.82rem;
+}
+.alert-item strong { color: #be123c; font-size: 0.85rem; display: block; margin-bottom: 0.2rem; }
+.alert-desc { color: var(--color-text); margin: 0; font-size: 0.8rem; line-height: 1.5; }
+.alert-fallback { font-size: 0.85rem; color: var(--color-muted); }
+.alert-ok-msg { font-size: 0.82rem; color: var(--color-muted); margin-bottom: 0.5rem; }
+
+.dash-sub {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  margin-top: 0.65rem;
+}
+
+/* ================================================================
+   TTC BUS CARD
+   ================================================================ */
+.bus-route-block {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+.bus-route-block:last-of-type { border-bottom: none; }
+
+.bus-route-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.bus-badge {
+  display: inline-block;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  min-width: 2.2rem;
+  text-align: center;
+}
+.bus-route-name { font-size: 0.85rem; font-weight: 700; color: var(--color-primary); }
+.bus-dist { font-size: 0.72rem; color: var(--color-muted); margin-left: auto; }
+
+.bus-stop-name { font-size: 0.75rem; color: var(--color-muted); margin-bottom: 0.4rem; }
+
+.bus-direction {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-bottom: 0.2rem;
+}
+.bus-dir-label { font-size: 0.76rem; color: var(--color-muted); min-width: 100px; }
+.bus-times { font-size: 0.85rem; font-weight: 700; color: var(--color-accent); }
+.bus-no-pred { font-size: 0.78rem; color: var(--color-muted); font-style: italic; }
+
+/* ================================================================
+   GO TRANSIT CARD
+   ================================================================ */
+.go-header-note {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.go-terminal-badge {
+  background: #1a3a6b;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+}
+.go-walk-note { font-size: 0.75rem; color: var(--color-muted); }
+
+.go-routes { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+.go-route-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.go-route-num {
+  background: #1a3a6b;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  min-width: 2.5rem;
+  text-align: center;
+}
+.go-route-info { display: flex; flex-direction: column; gap: 0.1rem; }
+.go-dest { font-size: 0.85rem; font-weight: 600; color: var(--color-text); }
+.go-freq { font-size: 0.72rem; color: var(--color-muted); }
+.go-links { display: flex; flex-direction: column; gap: 0.4rem; }
+
+/* ================================================================
+   SHARED ELEMENTS
+   ================================================================ */
+.dash-status {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--color-muted);
+  padding: 1rem 0;
+}
+.dash-status-err { color: #dc2626; }
+
+.dash-ext-link {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  transition: color var(--transition);
+}
+.dash-ext-link:hover { color: var(--color-accent); }
+
+/* ================================================================
+   STATION INFO CARD (bottom)
+   ================================================================ */
+.dash-stations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+.station-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+.station-icon { font-size: 1.4rem; flex-shrink: 0; }
+.station-name { font-size: 0.88rem; font-weight: 700; color: var(--color-primary); margin-bottom: 0.1rem; }
+.station-detail { font-size: 0.76rem; color: var(--color-muted); line-height: 1.5; }
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 900px) {
+  .dash-grid-middle { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .dash-grid-middle { grid-template-columns: 1fr; }
+  .weather-now { grid-template-columns: auto 1fr; }
+  .weather-details { grid-column: 1 / -1; }
+  .weather-forecast { grid-template-columns: repeat(2, 1fr); }
+  .dash-hero-inner { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 400px) {
+  .weather-forecast { grid-template-columns: 1fr 1fr; }
+}
