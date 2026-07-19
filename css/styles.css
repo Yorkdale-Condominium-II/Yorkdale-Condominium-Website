@@ -27,7 +27,7 @@
 [hidden] { display: none !important; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font-body); color: var(--color-text); background: var(--color-bg); line-height: 1.6; }
-p { text-align: justify !important; }
+#welcome p { text-align: justify; }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 ul { list-style: none; }
@@ -490,7 +490,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   margin: 0 auto 0.75rem;
   border: 3px solid var(--color-accent);
 }
-.board-card h3 { font-size: 0.83rem; font-weight: 700; color: var(--color-primary); line-height: 1.35; text-align: center !important; }
+.board-card h3 { font-size: 0.83rem; font-weight: 700; color: var(--color-primary); line-height: 1.35; text-align: center; }
 .board-card .board-role {
   font-size: 0.68rem;
   color: var(--color-accent);
@@ -498,9 +498,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   text-transform: uppercase;
   letter-spacing: 0.06em;
   margin-top: 0.2rem;
-  text-align: center !important;
+  text-align: center;
 }
-.board-card .board-desc { text-align: center !important; }
 .board-card .board-desc {
   font-size: 0.75rem;
   color: var(--color-muted);
