@@ -3,15 +3,15 @@
    ============================================================ */
 
 :root {
-  --color-primary:       #2d4a6e;
-  --color-primary-dark:  #1e3450;
-  --color-accent:        #c4622d;
-  --color-accent-hover:  #a84e22;
+  --color-primary:       #0d3b5c;
+  --color-primary-dark:  #082844;
+  --color-accent:        #4a8aaf;
+  --color-accent-hover:  #3a7a9f;
   --color-bg:            #fafaf8;
-  --color-surface:       #f0ede8;
+  --color-surface:       #f0eeeb;
   --color-text:          #1a1a18;
-  --color-muted:         #6b7280;
-  --color-border:        #e2ddd7;
+  --color-muted:         #72706a;
+  --color-border:        #dbd7d2;
   --font-heading:        'Georgia', serif;
   --font-body:           'Segoe UI', system-ui, -apple-system, sans-serif;
   --nav-height:          72px;
@@ -129,7 +129,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   min-height: 82vh;
   display: flex;
   align-items: center;
-  background: linear-gradient(135deg, #1e3450 0%, #2d4a6e 45%, #3a5e87 100%);
+  background: linear-gradient(135deg, #082844 0%, #0d3b5c 45%, #1a5272 100%);
   overflow: hidden;
 }
 .hero::before {
@@ -137,8 +137,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(circle at 15% 85%, rgba(196,98,45,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 85% 15%, rgba(196,98,45,0.12) 0%, transparent 45%);
+    radial-gradient(circle at 15% 85%, rgba(74,138,175,0.2) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(74,138,175,0.14) 0%, transparent 45%);
 }
 .hero::after {
   content: '';
@@ -318,7 +318,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   outline: none;
   border-color: var(--color-primary);
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(45,74,110,0.1);
+  box-shadow: 0 0 0 3px rgba(13,59,92,0.12);
 }
 .contact-form textarea { resize: vertical; min-height: 120px; }
 .contact-form .btn { margin-top: 0.25rem; width: 100%; }
@@ -354,8 +354,8 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--color-accent);
-  background: rgba(196,98,45,0.12);
-  border: 1px solid rgba(196,98,45,0.25);
+  background: rgba(74,138,175,0.14);
+  border: 1px solid rgba(74,138,175,0.28);
   border-radius: 2rem;
   padding: 0.3rem 0.9rem;
   margin-bottom: 1.25rem;
@@ -618,7 +618,7 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   .hero {
     min-height: auto;
     padding: 2cm 0 1.5cm;
-    background: #2d4a6e !important;
+    background: #0d3b5c !important;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
