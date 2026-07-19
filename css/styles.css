@@ -498,6 +498,13 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   letter-spacing: 0.06em;
   margin-top: 0.2rem;
 }
+.board-card .board-desc {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+  line-height: 1.55;
+  margin-top: 0.65rem;
+  text-align: left;
+}
 .contact-board-note { font-size: 0.83rem; color: var(--color-muted); line-height: 1.6; }
 .contact-board-note a { color: var(--color-primary); font-weight: 700; text-decoration: underline; }
 
