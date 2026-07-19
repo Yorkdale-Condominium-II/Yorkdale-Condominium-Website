@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yorkdale II — Transit &amp; Weather Board</title>
+  <style>
+    /* ================================================================
+       DESIGN TOKENS
+       Background: #0A0A0A  — near-black, optimal for OLED/QLED TVs
+       TTC Red:    #DA291C  — official TTC brand red
+       GO Green:   #00853F  — official GO Transit / Metrolinx green
+       Weather:    #2B85C8  — cool sky blue
+       ================================================================ */
+    :root {
+      --bg:           #0A0A0A;
+      --surface:      #141414;
+      --surface-2:    #1C1C1C;
+      --border:       #2A2A2A;
+      --text:         #F0F0F0;
+      --muted:        #888888;
+      --dim:          #555555;
+
+      --ttc:          #DA291C;
+      --ttc-dim:      rgba(218,41,28,0.15);
+      --ttc-border:   rgba(218,41,28,0.35);
+
+      --go:           #00853F;
+      --go-dim:       rgba(0,133,63,0.15);
+      --go-border:    rgba(0,133,63,0.35);
+
+      --wx:           #2B85C8;
+      --wx-dim:       rgba(43,133,200,0.15);
+      --wx-border:    rgba(43,133,200,0.35);
+
+      --good:         #22C55E;
+      --warn:         #F59E0B;
+      --bad:          #EF4444;
+
+      --r:            6px;
+      --f-sans:       'Segoe UI', system-ui, -apple-system, sans-serif;
+      --f-mono:       'Consolas', 'SF Mono', 'Fira Code', monospace;
+    }
+
+    /* ---- Base ---- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--f-sans);
+      line-height: 1.4;
+      overflow: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ================================================================
+       LAYOUT — designed for 1920×1080 (Full HD) landscape
+       ================================================================ */
+    .board {
+      display: grid;
+      grid-template-rows: 72px 1fr 52px;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ---- Header bar ---- */
+    .bar {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 0 2rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .bar-left { display: flex; align-items: center; gap: 0.75rem; }
+    .bar-logo {
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .bar-sep { width: 1px; height: 24px; background: var(--border); }
+    .bar-location { font-size: 0.82rem; color: var(--dim); }
+
+    .bar-clock {
+      text-align: center;
+      font-family: var(--f-mono);
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+    .bar-date {
+      font-size: 0.75rem; color: var(--muted);
+      text-align: center; margin-top: 0.05rem;
+      letter-spacing: 0.03em;
+    }
+
+    .bar-right { display: flex; justify-content: flex-end; align-items: center; gap: 0.5rem; }
+    .dot-live {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--good);
+      box-shadow: 0 0 6px var(--good);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .live-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .updated-label { font-size: 0.68rem; color: var(--dim); font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+
+    /* ---- Main content ---- */
+    .content {
+      display: grid;
+      grid-template-columns: 320px 1fr 280px;
+      gap: 1px;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .col {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ---- Footer strip ---- */
+    .ticker {
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+      gap: 2rem;
+      font-size: 0.72rem;
+      color: var(--dim);
+      overflow: hidden;
+    }
+    .ticker-item { white-space: nowrap; display: flex; align-items: center; gap: 0.4rem; }
+    .ticker-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    /* ================================================================
+       SECTION HEADERS
+       ================================================================ */
+    .sec-head {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .sec-stripe { width: 3px; height: 20px; border-radius: 2px; flex-shrink: 0; }
+    .sec-label {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted);
+    }
+    .sec-body { padding: 1.25rem; flex: 1; overflow-y: auto; scrollbar-width: none; }
+    .sec-body::-webkit-scrollbar { display: none; }
+
+    /* ================================================================
+       WEATHER COLUMN (left)
+       ================================================================ */
+    .wx-stripe { background: var(--wx); }
+
+    .wx-current {
+      text-align: center;
+      padding: 1.5rem 0 1.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1.25rem;
+    }
+    .wx-icon { font-size: 3.5rem; line-height: 1; margin-bottom: 0.5rem; }
+    .wx-temp {
+      font-size: 4rem; font-weight: 700; line-height: 1;
+      color: var(--text); font-variant-numeric: tabular-nums;
+    }
+    .wx-unit { font-size: 1.75rem; font-weight: 400; color: var(--muted); }
+    .wx-cond { font-size: 0.9rem; color: var(--muted); margin-top: 0.35rem; }
+    .wx-feel { font-size: 0.78rem; color: var(--dim); margin-top: 0.15rem; }
+
+    .wx-stats { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .wx-stat {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.45rem 0.65rem;
+      background: var(--surface); border-radius: var(--r);
+      font-size: 0.78rem;
+    }
+    .wx-stat-label { color: var(--muted); }
+    .wx-stat-val { font-family: var(--f-mono); color: var(--text); font-variant-numeric: tabular-nums; }
+
+    .wx-forecast { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+    .fc {
+      background: var(--surface); border-radius: var(--r);
+      padding: 0.65rem 0.5rem; text-align: center;
+      border: 1px solid var(--border);
+    }
+    .fc.today { border-color: var(--wx-border); background: var(--wx-dim); }
+    .fc-day { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--dim); margin-bottom: 0.25rem; }
+    .fc.today .fc-day { color: var(--wx); }
+    .fc-ico { font-size: 1.25rem; margin-bottom: 0.25rem; }
+    .fc-temps { font-family: var(--f-mono); font-size: 0.8rem; color: var(--text); font-variant-numeric: tabular-nums; }
+    .fc-lo { color: var(--dim); }
+    .fc-rain { font-size: 0.65rem; color: var(--wx); margin-top: 0.2rem; }
+
+    /* ================================================================
+       TTC COLUMN (centre)
+       ================================================================ */
+    .ttc-stripe { background: var(--ttc); }
+
+    /* Subway status */
+    .subway-block {
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .subway-title {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; padding: 0.5rem 0.85rem;
+      background: var(--surface-2); color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .svc-row {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .svc-row:last-child { border-bottom: none; }
+    .line-chip {
+      font-size: 0.65rem; font-weight: 700; padding: 0.2rem 0.6rem;
+      border-radius: 3px; white-space: nowrap; letter-spacing: 0.03em;
+    }
+    .l1 { background: #FFB600; color: #000; }
+    .l2 { background: #1A7C3E; color: #fff; }
+    .l3 { background: #0066B2; color: #fff; }
+    .l4 { background: #8B1A1A; color: #fff; }
+    .svc-name { font-size: 0.82rem; color: var(--text); flex: 1; }
+    .svc-status { font-size: 0.72rem; font-weight: 600; }
+    .s-ok   { color: var(--good); }
+    .s-warn { color: var(--warn); }
+    .s-bad  { color: var(--bad); }
+    .svc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sd-ok   { background: var(--good); }
+    .sd-warn { background: var(--warn); }
+    .sd-bad  { background: var(--bad); }
+
+    /* Bus predictions */
+    .bus-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    .bus-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--ttc);
+      border-radius: var(--r);
+      padding: 0.85rem;
+      overflow: hidden;
+    }
+    .bus-head { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; }
+    .bus-num {
+      background: var(--ttc); color: #fff;
+      font-size: 0.78rem; font-weight: 700;
+      padding: 0.18rem 0.55rem; border-radius: 3px;
+      font-variant-numeric: tabular-nums;
+    }
+    .bus-name { font-size: 0.82rem; font-weight: 700; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bus-stop { font-size: 0.65rem; color: var(--dim); margin-bottom: 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bus-dir { margin-bottom: 0.3rem; }
+    .bus-dir-name { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--dim); margin-bottom: 0.1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .bus-times { font-family: var(--f-mono); font-size: 0.88rem; font-weight: 600; color: #FF6B5E; font-variant-numeric: tabular-nums; }
+    .bus-dist { margin-left: auto; font-size: 0.62rem; color: var(--dim); }
+
+    /* ================================================================
+       GO TRANSIT COLUMN (right)
+       ================================================================ */
+    .go-stripe { background: var(--go); }
+
+    .go-terminal {
+      display: flex; flex-direction: column; gap: 0.2rem;
+      padding: 0.85rem;
+      background: var(--go-dim);
+      border: 1px solid var(--go-border);
+      border-radius: var(--r);
+      margin-bottom: 1.25rem;
+    }
+    .go-terminal-name { font-size: 0.82rem; font-weight: 700; color: var(--go); }
+    .go-terminal-sub { font-size: 0.68rem; color: var(--muted); }
+
+    .go-routes { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .go-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--go);
+      border-radius: 0 var(--r) var(--r) 0;
+      padding: 0.7rem 0.85rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .go-num {
+      background: var(--go); color: #fff;
+      font-size: 0.75rem; font-weight: 700;
+      padding: 0.2rem 0.55rem; border-radius: 3px;
+      min-width: 2.6rem; text-align: center;
+    }
+    .go-info { flex: 1; overflow: hidden; }
+    .go-dest { font-size: 0.82rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .go-freq { font-size: 0.65rem; color: var(--dim); margin-top: 0.05rem; }
+
+    .go-links { display: flex; flex-direction: column; gap: 0.4rem; }
+    .go-link {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.55rem 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      font-size: 0.75rem; color: var(--muted);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .go-link:hover { border-color: var(--go-border); color: var(--go); }
+    .go-link-arr { color: var(--dim); }
+
+    /* ================================================================
+       STATUS DOT
+       ================================================================ */
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .d-ok   { background: var(--good); }
+    .d-warn { background: var(--warn); }
+    .d-bad  { background: var(--bad); }
+
+    /* ================================================================
+       ERROR / LOADING STATES
+       ================================================================ */
+    .state-msg { font-size: 0.78rem; color: var(--dim); padding: 1rem 0; }
+
+    /* ================================================================
+       RESPONSIVE (for non-TV screens)
+       ================================================================ */
+    @media (max-width: 1000px) {
+      body { overflow: auto; }
+      .board { grid-template-rows: 64px auto auto; height: auto; }
+      .content { grid-template-columns: 1fr; background: var(--bg); }
+      .col { overflow: visible; }
+      .bus-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="board">
+
+  <!-- ============================================================
+       TOP BAR
+       ============================================================ -->
+  <header class="bar">
+    <div class="bar-left">
+      <span class="bar-logo">120 Varna Drive</span>
+      <span class="bar-sep"></span>
+      <span class="bar-location">North York, Toronto</span>
+    </div>
+    <div>
+      <div class="bar-clock" id="clock">—:——</div>
+      <div class="bar-date" id="dateline">—</div>
+    </div>
+    <div class="bar-right">
+      <span class="dot-live" aria-hidden="true"></span>
+      <span class="live-label">Live</span>
+      <span class="updated-label" id="updated">—</span>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       MAIN CONTENT — 3 columns
+       ============================================================ -->
+  <div class="content">
+
+    <!-- ---- LEFT: Weather ---- -->
+    <div class="col">
+      <div class="sec-head">
+        <div class="sec-stripe wx-stripe"></div>
+        <span class="sec-label">Weather — North York</span>
+      </div>
+      <div class="sec-body" id="wx-body">
+        <div class="state-msg">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ---- CENTRE: TTC ---- -->
+    <div class="col">
+      <div class="sec-head">
+        <div class="sec-stripe ttc-stripe"></div>
+        <span class="sec-label">Toronto Transit Commission</span>
+      </div>
+      <div class="sec-body" id="ttc-body">
+        <div class="state-msg">Loading…</div>
+      </div>
+    </div>
+
+    <!-- ---- RIGHT: GO Transit ---- -->
+    <div class="col">
+      <div class="sec-head">
+        <div class="sec-stripe go-stripe"></div>
+        <span class="sec-label">GO Transit</span>
+      </div>
+      <div class="sec-body" id="go-body">
+        <div class="state-msg">Loading…</div>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- ============================================================
+       FOOTER TICKER
+       ============================================================ -->
+  <footer class="ticker" aria-label="Quick reference">
+    <div class="ticker-item"><span class="ticker-dot d-ok"></span>Yorkdale Station — Line 1, ~5 min walk</div>
+    <div class="ticker-item"><span class="ticker-dot d-ok"></span>Wilson Station — Line 1, ~12 min walk</div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--go)"></span>Yorkdale GO Terminal — ~8 min walk, inside mall</div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--ttc)"></span>Route 29 Dufferin — 24 h service</div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--ttc)"></span>Route 128 Stanley Greene — serves Varna Dr</div>
+    <div class="ticker-item"><span class="ticker-dot" style="background:var(--wx)"></span>Weather: Open-Meteo · Transit: TTC &amp; Metrolinx</div>
+  </footer>
+
+</div><!-- .board -->
+
+<script>
+(function () {
+  'use strict';
+
+  var LAT = 43.722, LON = -79.444;
+
+  /* ---- WMO codes ---- */
+  var WMO = {
+    0:{'l':'Clear','i':'☀️'}, 1:{'l':'Mainly clear','i':'🌤️'}, 2:{'l':'Partly cloudy','i':'⛅'},
+    3:{'l':'Overcast','i':'☁️'}, 45:{'l':'Foggy','i':'🌫️'}, 48:{'l':'Icy fog','i':'🌫️'},
+    51:{'l':'Light drizzle','i':'🌦️'}, 53:{'l':'Drizzle','i':'🌦️'}, 55:{'l':'Heavy drizzle','i':'🌧️'},
+    61:{'l':'Light rain','i':'🌧️'}, 63:{'l':'Rain','i':'🌧️'}, 65:{'l':'Heavy rain','i':'🌧️'},
+    66:{'l':'Freezing rain','i':'🌨️'}, 71:{'l':'Light snow','i':'🌨️'}, 73:{'l':'Snow','i':'❄️'},
+    75:{'l':'Heavy snow','i':'❄️'}, 80:{'l':'Light showers','i':'🌦️'}, 81:{'l':'Showers','i':'🌧️'},
+    82:{'l':'Heavy showers','i':'🌧️'}, 95:{'l':'Thunderstorm','i':'⛈️'}, 99:{'l':'Thunderstorm','i':'⛈️'}
+  };
+  function wmo(c) { return WMO[c] || {l:'—', i:'🌡️'}; }
+  function windDir(d) { return ['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8]; }
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function fmtTime(iso) {
+    try { return new Date(iso + ':00').toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit',hour12:true}); }
+    catch(e) { return iso; }
+  }
+  function shortDay(iso) {
+    try { return new Date(iso).toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'}); }
+    catch(e) { return iso; }
+  }
+
+  /* ================================================================
+     CLOCK
+     ================================================================ */
+  function tickClock() {
+    var now = new Date();
+    var cl = document.getElementById('clock');
+    var dl = document.getElementById('dateline');
+    if (cl) cl.textContent = now.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+    if (dl) dl.textContent = now.toLocaleDateString('en-CA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  function markUpdated() {
+    var el = document.getElementById('updated');
+    if (el) el.textContent = 'Updated ' + new Date().toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:false});
+  }
+
+  /* ================================================================
+     WEATHER  — Open-Meteo (free, no key, CORS-enabled)
+     ================================================================ */
+  function loadWeather() {
+    var url = 'https://api.open-meteo.com/v1/forecast'
+      + '?latitude=' + LAT + '&longitude=' + LON
+      + '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,relative_humidity_2m,precipitation,uv_index'
+      + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,sunrise,sunset'
+      + '&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm'
+      + '&timezone=America%2FToronto&forecast_days=4';
+
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(d) {
+        var c = d.current, day = d.daily, cd = wmo(c.weather_code);
+        var h = '<div class="wx-current">'
+          + '<div class="wx-icon">' + cd.i + '</div>'
+          + '<div class="wx-temp">' + Math.round(c.temperature_2m) + '<span class="wx-unit">°C</span></div>'
+          + '<div class="wx-cond">' + esc(cd.l) + '</div>'
+          + '<div class="wx-feel">Feels like ' + Math.round(c.apparent_temperature) + '°C</div>'
+          + '</div>'
+          + '<div class="wx-stats">'
+          + stat('💧 Humidity', c.relative_humidity_2m + '%')
+          + stat('💨 Wind', Math.round(c.wind_speed_10m) + ' km/h ' + windDir(c.wind_direction_10m))
+          + stat('☂️ Precip', c.precipitation + ' mm')
+          + stat('☀️ UV Index', c.uv_index)
+          + stat('🌅 Sunrise', fmtTime(day.sunrise[0]))
+          + stat('🌇 Sunset', fmtTime(day.sunset[0]))
+          + '</div>'
+          + '<div class="wx-forecast">';
+
+        for (var i = 0; i < 4; i++) {
+          var fc = wmo(day.weather_code[i]);
+          h += '<div class="fc' + (i===0?' today':'') + '">'
+            + '<div class="fc-day">' + (i===0 ? 'Today' : esc(shortDay(day.time[i]))) + '</div>'
+            + '<div class="fc-ico">' + fc.i + '</div>'
+            + '<div class="fc-temps">' + Math.round(day.temperature_2m_max[i]) + '° <span class="fc-lo">/ ' + Math.round(day.temperature_2m_min[i]) + '°</span></div>'
+            + '<div class="fc-rain">' + (day.precipitation_sum[i] > 0 ? day.precipitation_sum[i].toFixed(1)+' mm' : '') + '</div>'
+            + '</div>';
+        }
+        h += '</div>';
+        document.getElementById('wx-body').innerHTML = h;
+      })
+      .catch(function() {
+        document.getElementById('wx-body').innerHTML = '<div class="state-msg">Weather unavailable — check network</div>';
+      });
+  }
+
+  function stat(label, val) {
+    return '<div class="wx-stat"><span class="wx-stat-label">' + esc(label) + '</span><span class="wx-stat-val">' + esc(val) + '</span></div>';
+  }
+
+  /* ================================================================
+     TTC — Subway alerts + Bus predictions (UMO/NextBus)
+     ================================================================ */
+  var TTC_ROUTES = [
+    {tag:'29',  name:'Dufferin'},
+    {tag:'128', name:'Stanley Greene'},
+    {tag:'161', name:'Rogers Rd'},
+    {tag:'196', name:'York U Rocket'}
+  ];
+  var UMO = 'https://retro.umoiq.com/service/publicXMLFeed?a=ttc';
+
+  function haversine(lat1,lon1,lat2,lon2) {
+    var R=6371000, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+    var a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)*Math.sin(dLon/2);
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+
+  function loadTTC() {
+    /* Subway status */
+    var subwayHtml = buildSubwayHtml();
+
+    /* Bus predictions via UMO */
+    var cfgPromises = TTC_ROUTES.map(function(route) {
+      return fetch(UMO + '&command=routeConfig&r=' + route.tag + '&verbose')
+        .then(function(r){ return r.text(); })
+        .then(function(txt) {
+          var xml = new DOMParser().parseFromString(txt,'text/xml');
+          var stops = xml.querySelectorAll('stop[lat]');
+          var best = null, bestDist = Infinity;
+          stops.forEach(function(s) {
+            var d = haversine(LAT,LON,parseFloat(s.getAttribute('lat')),parseFloat(s.getAttribute('lon')));
+            if (d < bestDist) { bestDist = d; best = s; }
+          });
+          return best ? {route:route, stopTag:best.getAttribute('tag'), stopTitle:best.getAttribute('title'), dist:Math.round(bestDist)} : null;
+        })
+        .catch(function(){ return null; });
+    });
+
+    Promise.all(cfgPromises).then(function(results) {
+      var valid = results.filter(Boolean);
+      if (!valid.length) { renderTTCFallback(subwayHtml); return; }
+
+      var stopsParam = valid.map(function(v){ return '&stops='+v.route.tag+'|'+v.stopTag; }).join('');
+      return fetch(UMO + '&command=predictionsForMultiStops' + stopsParam)
+        .then(function(r){ return r.text(); })
+        .then(function(txt) {
+          var xml = new DOMParser().parseFromString(txt,'text/xml');
+          renderTTC(subwayHtml, xml, valid);
+        });
+    }).catch(function(){ renderTTCFallback(subwayHtml); });
+  }
+
+  function buildSubwayHtml() {
+    return '<div class="subway-block">'
+      + '<div class="subway-title">Subway Service Status</div>'
+      + '<div class="svc-row"><span class="dot d-ok"></span><span class="line-chip l1">Line 1</span><span class="svc-name">Yonge–University</span><span class="svc-status s-ok">Good service</span></div>'
+      + '<div class="svc-row"><span class="dot d-ok"></span><span class="line-chip l2">Line 2</span><span class="svc-name">Bloor–Danforth</span><span class="svc-status s-ok">Good service</span></div>'
+      + '</div>';
+  }
+
+  function renderTTC(subwayHtml, xml, routeInfo) {
+    var preds = xml.querySelectorAll('predictions');
+    if (!preds.length) { renderTTCFallback(subwayHtml); return; }
+
+    var busHtml = '<div class="bus-grid">';
+    preds.forEach(function(pg) {
+      var rt = pg.getAttribute('routeTag') || '';
+      var rtTitle = pg.getAttribute('routeTitle') || rt;
+      var stopTitle = pg.getAttribute('stopTitle') || '';
+      var info = routeInfo.find(function(r){ return r.route.tag === rt; });
+      var dirEls = pg.querySelectorAll('direction');
+
+      busHtml += '<div class="bus-card">'
+        + '<div class="bus-head"><span class="bus-num">' + esc(rt) + '</span><span class="bus-name">' + esc(rtTitle) + '</span>'
+        + (info ? '<span class="bus-dist">' + info.dist + ' m</span>' : '')
+        + '</div>'
+        + '<div class="bus-stop">' + esc(stopTitle) + '</div>';
+
+      if (!dirEls.length) {
+        busHtml += '<div class="state-msg">No predictions</div>';
+      } else {
+        dirEls.forEach(function(dir) {
+          var dTitle = dir.getAttribute('title') || '';
+          var ps = dir.querySelectorAll('prediction');
+          var times = [];
+          ps.forEach(function(p,i){ if(i<3) times.push(p.getAttribute('minutes')+'m'); });
+          busHtml += '<div class="bus-dir">'
+            + '<div class="bus-dir-name">' + esc(dTitle) + '</div>'
+            + '<div class="bus-times">' + (times.length ? times.join(' · ') : 'No service') + '</div>'
+            + '</div>';
+        });
+      }
+      busHtml += '</div>';
+    });
+    busHtml += '</div>';
+
+    document.getElementById('ttc-body').innerHTML = subwayHtml + busHtml;
+  }
+
+  function renderTTCFallback(subwayHtml) {
+    var fb = subwayHtml
+      + '<div class="state-msg">Live bus predictions unavailable.</div>'
+      + '<div style="display:flex;flex-direction:column;gap:0.35rem;margin-top:0.5rem">'
+      + ['29','128','161','196'].map(function(r){
+          return '<a href="https://www.ttc.ca/route-schedules-and-maps/routes/0'+r+'" target="_blank" class="go-link">'
+            + '<span>Route ' + r + ' Schedule</span><span class="go-link-arr">↗</span></a>';
+        }).join('')
+      + '</div>';
+    document.getElementById('ttc-body').innerHTML = fb;
+  }
+
+  /* ================================================================
+     GO TRANSIT  — static routes from Yorkdale GO Terminal
+     ================================================================ */
+  function renderGO() {
+    var routes = [
+      {num:'40',  dest:'Barrie GO Station',  freq:'Peak: every 30 min'},
+      {num:'40A', dest:'Barrie (express)',    freq:'Peak service'},
+      {num:'40C', dest:'Cookstown / Barrie', freq:'Select trips'},
+      {num:'68',  dest:'Bradford / Barrie',  freq:'Peak service'},
+      {num:'64',  dest:'Newmarket GO',       freq:'Peak service'}
+    ];
+
+    var h = '<div class="go-terminal">'
+      + '<div class="go-terminal-name">Yorkdale GO Bus Terminal</div>'
+      + '<div class="go-terminal-sub">~8 min walk · inside Yorkdale Mall</div>'
+      + '</div>'
+      + '<div class="go-routes">';
+
+    routes.forEach(function(r) {
+      h += '<div class="go-card">'
+        + '<span class="go-num">' + esc(r.num) + '</span>'
+        + '<div class="go-info"><div class="go-dest">' + esc(r.dest) + '</div><div class="go-freq">' + esc(r.freq) + '</div></div>'
+        + '</div>';
+    });
+
+    h += '</div>'
+      + '<div class="go-links">'
+      + '<a href="https://www.gotransit.com/en/trip-planning/plan-your-trip" target="_blank" class="go-link"><span>GO Trip Planner</span><span class="go-link-arr">↗</span></a>'
+      + '<a href="https://www.gotransit.com/en/service-updates" target="_blank" class="go-link"><span>GO Service Updates</span><span class="go-link-arr">↗</span></a>'
+      + '</div>';
+
+    document.getElementById('go-body').innerHTML = h;
+  }
+
+  /* ================================================================
+     SUBWAY ALERTS  — TTC live-alerts API
+     ================================================================ */
+  function loadSubwayAlerts() {
+    fetch('https://alerts.ttc.ca/api/alerts/live-alerts')
+      .then(function(r){ return r.json(); })
+      .then(function(data) {
+        var alerts = Array.isArray(data.alerts) ? data.alerts : (Array.isArray(data) ? data : []);
+        var l1 = alerts.filter(function(a){
+          var t = (a.title || a.header || '').toLowerCase();
+          return t.indexOf('line 1')!==-1 || t.indexOf('yonge')!==-1 || t.indexOf('university')!==-1;
+        });
+        if (!l1.length) return; /* keep "Good service" default */
+
+        /* Replace subway block with alert info */
+        var ttcEl = document.getElementById('ttc-body');
+        if (!ttcEl) return;
+        var alertHtml = '<div class="subway-block">'
+          + '<div class="subway-title">Subway Service Status — Line 1 Alerts</div>';
+        l1.slice(0,2).forEach(function(a) {
+          alertHtml += '<div class="svc-row"><span class="dot d-warn"></span><span class="svc-name">' + esc(a.title || a.header || 'Alert') + '</span></div>';
+        });
+        alertHtml += '</div>';
+        ttcEl.innerHTML = alertHtml + ttcEl.innerHTML.replace(/<div class="subway-block">[\s\S]*?<\/div>\s*<\/div>/, '');
+      })
+      .catch(function(){ /* keep default */ });
+  }
+
+  /* ================================================================
+     INIT + AUTO-REFRESH
+     ================================================================ */
+  function refresh() {
+    loadWeather();
+    loadTTC();
+    renderGO();
+    markUpdated();
+    loadSubwayAlerts();
+  }
+
+  refresh();
+  setInterval(refresh, 60000);
+
+})();
+</script>
+</body>
+</html>
