@@ -599,6 +599,18 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
 }
 .resource-link:hover { color: var(--color-accent); }
 
+.community-card { align-items: center; text-align: center; }
+.community-card p { text-align: left; }
+.community-qr {
+  width: 180px;
+  height: 180px;
+  object-fit: cover;
+  object-position: center 46%;
+  border-radius: var(--radius);
+  display: block;
+  margin: 0.5rem auto;
+}
+
 /* ============================================================
    PRINT STYLES
    ============================================================ */
