@@ -250,6 +250,9 @@ body.nav-open .hamburger span:nth-child(3) { transform: translateY(-7px) rotate(
   margin-left: 0.5rem;
   vertical-align: middle;
 }
+.announcement-badge.badge-notice      { background: #dc2626; }
+.announcement-badge.badge-maintenance { background: #d97706; }
+.announcement-badge.badge-news        { background: #16a34a; }
 .announcement-title { font-size: 1.05rem; font-weight: 700; color: var(--color-primary); margin: 0.35rem 0 0.6rem; }
 .announcement-card p { font-size: 0.9rem; color: var(--color-text); line-height: 1.6; }
 .announcement-footer {
